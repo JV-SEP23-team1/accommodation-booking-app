@@ -5,17 +5,16 @@ import com.example.accommodationbookingapp.model.Booking;
 import com.example.accommodationbookingapp.model.User;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDate;
+
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class CreateBookingRequestDto {
-    @NotBlank
+    @NotNull
     private LocalDate checkInDate;
-    @NotBlank
+    @NotNull
     private LocalDate checkOutDate;
-    @NotBlank
-    private Accommodation accommodationId;
-    @NotBlank
-    private User userId;
-    private Booking.Status status;
+    @NotNull
+    private Long accommodationId;
 }

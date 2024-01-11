@@ -2,6 +2,7 @@ package com.example.accommodationbookingapp.dto.accommodation;
 
 import com.example.accommodationbookingapp.model.Accommodation;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.util.List;
@@ -13,12 +14,12 @@ public class CreateAccommodationRequestDto {
     private String location;
     @NotBlank
     private String size;
-    @NotBlank
+    @NotNull
     private List<String> amenities;
-    @NotBlank
+    @NotNull
     @Positive
     private BigDecimal dailyRate;
-    @NotBlank
+    @NotNull
     @Positive
     private Integer availability;
     private Accommodation.Type type;
