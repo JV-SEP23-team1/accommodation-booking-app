@@ -8,5 +8,5 @@ import lombok.Data;
 public class UpdateBookingRequestDto {
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
-    private Accommodation accommodationId;
+    private Long accommodationId;
 }

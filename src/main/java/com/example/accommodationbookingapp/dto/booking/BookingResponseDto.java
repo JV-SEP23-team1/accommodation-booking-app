@@ -11,7 +11,7 @@ public class BookingResponseDto {
     private Long id;
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
-    private Accommodation accommodationId;
-    private User userId;
+    private Long accommodationId;
+    private Long userId;
     private Booking.Status status;
 }
