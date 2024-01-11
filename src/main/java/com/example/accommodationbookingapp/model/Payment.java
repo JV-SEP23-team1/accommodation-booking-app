@@ -33,7 +33,7 @@ public class Payment {
     @Column(name = "amount_to_pay", nullable = false)
     private BigDecimal amountToPay;
 
-    enum Status {
+    public enum Status {
         PENDING,
         PAID
     }

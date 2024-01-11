@@ -47,7 +47,7 @@ public class Booking {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
-    enum Status {
+    public enum Status {
         PENDING,
         CONFIRMED,
         CANCELED,
