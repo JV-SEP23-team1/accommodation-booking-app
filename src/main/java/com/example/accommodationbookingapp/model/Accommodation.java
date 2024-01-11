@@ -25,6 +25,7 @@ public class Accommodation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(nullable = false)
     private Type type;
     @Column(nullable = false)
     private String location;
