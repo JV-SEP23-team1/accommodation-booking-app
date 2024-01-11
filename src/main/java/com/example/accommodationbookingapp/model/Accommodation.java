@@ -40,7 +40,7 @@ public class Accommodation {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
-    enum Type {
+    public enum Type {
         HOUSE,
         APARTMENT,
         CONDO,
