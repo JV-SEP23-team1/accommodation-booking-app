@@ -1,8 +1,6 @@
 package com.example.accommodationbookingapp.dto.booking;
 
-import com.example.accommodationbookingapp.model.Accommodation;
 import com.example.accommodationbookingapp.model.Booking;
-import com.example.accommodationbookingapp.model.User;
 import java.time.LocalDate;
 import lombok.Data;
 

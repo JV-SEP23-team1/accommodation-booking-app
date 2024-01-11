@@ -1,12 +1,7 @@
 package com.example.accommodationbookingapp.dto.booking;
 
-import com.example.accommodationbookingapp.model.Accommodation;
-import com.example.accommodationbookingapp.model.Booking;
-import com.example.accommodationbookingapp.model.User;
-import jakarta.validation.constraints.NotBlank;
-import java.time.LocalDate;
-
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
 import lombok.Data;
 
 @Data
