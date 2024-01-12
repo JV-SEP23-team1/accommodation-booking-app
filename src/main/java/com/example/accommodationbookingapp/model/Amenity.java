@@ -19,7 +19,7 @@ public class Amenity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String name;
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
