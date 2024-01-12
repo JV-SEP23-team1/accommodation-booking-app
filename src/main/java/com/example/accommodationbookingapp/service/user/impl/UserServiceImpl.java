@@ -8,6 +8,7 @@ import com.example.accommodationbookingapp.model.User;
 import com.example.accommodationbookingapp.repository.user.UserRepository;
 import com.example.accommodationbookingapp.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,6 +18,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserResponseDto register(UserRegistrationRequestDto requestDto) {
@@ -24,6 +26,7 @@ public class UserServiceImpl implements UserService {
             throw new RegistrationException(REGISTER_ERROR_MESSAGE + requestDto.getEmail()
             );
         }
+        requestDto.setPassword(passwordEncoder.encode(requestDto.getPassword()));
         User user = userMapper.toModel(requestDto);
         return userMapper.toDto(userRepository.save(user));
     }
