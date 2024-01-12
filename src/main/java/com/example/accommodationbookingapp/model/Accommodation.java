@@ -21,7 +21,7 @@ import org.hibernate.type.SqlTypes;
 @Data
 @SQLDelete(sql = "UPDATE accomodations SET is_deleted = true WHERE id=?")
 @SQLRestriction("is_deleted=false")
-@Table(name = "accomodations")
+@Table(name = "accommodations")
 public class Accommodation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
