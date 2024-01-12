@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-amenities
+      author: anton dudar
+      changes:
+        - insert:
+            tableName: amenities
+            columns:
+              - column:
+                  name: name
+                  value: Pool
+        - insert:
+            tableName: amenities
+            columns:
+              - column:
+                  name: name
+                  value: Gym
+        - insert:
+            tableName: amenities
+            columns:
+              - column:
+                  name: name
+                  value: Free Wi-Fi
+        - insert:
+            tableName: amenities
+            columns:
+              - column:
+                  name: name
+                  value: Sea-view

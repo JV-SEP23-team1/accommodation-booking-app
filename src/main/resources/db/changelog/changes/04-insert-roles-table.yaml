@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-roles
+      author: anton dudar
+      changes:
+        - insert:
+            tableName: roles
+            columns:
+              - column: {name: role_name, value: "USER"}
+        - insert:
+            tableName: roles
+            columns:
+              - column: { name: role_name, value: "ADMIN"}
