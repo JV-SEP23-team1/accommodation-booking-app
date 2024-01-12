@@ -13,15 +13,15 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+    private static final String REGISTER_ERROR_MESSAGE = "Can't register a new user with email: ";
+
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
     @Override
     public UserResponseDto register(UserRegistrationRequestDto requestDto) {
         if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
-            throw new RegistrationException(
-                    "Can't register a new user with email: "
-                            + requestDto.getEmail()
+            throw new RegistrationException(REGISTER_ERROR_MESSAGE + requestDto.getEmail()
             );
         }
         User user = userMapper.toModel(requestDto);
