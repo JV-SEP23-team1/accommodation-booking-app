@@ -1,11 +1,13 @@
 package com.example.accommodationbookingapp.model;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.util.List;
@@ -31,8 +33,13 @@ public class Accommodation {
     private String location;
     @Column(nullable = false)
     private String size;
-    @ElementCollection
-    private List<String> amenities;
+    @ManyToMany
+    @JoinTable(
+            name = "accommodations_amenities",
+            joinColumns = @JoinColumn(name = "accommodation_id"),
+            inverseJoinColumns = @JoinColumn(name = "amenity_id")
+    )
+    private List<Amenity> amenities;
     @Column(name = "daily_rate", nullable = false)
     private BigDecimal dailyRate;
     @Column(nullable = false)
