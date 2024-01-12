@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       author: anton dudar
-      id: 09-create-accommodations-amenities-table
+      id: create-accommodations-amenities-table
       changes:
         - createTable:
             tableName: accommodations_amenities
