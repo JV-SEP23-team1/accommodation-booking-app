@@ -9,9 +9,9 @@ import org.mapstruct.Mapping;
 
 @Mapper(config = MapperConfig.class)
 public interface BookingMapper {
-    Booking requestDtoToEntity(CreateBookingRequestDto requestDto);
+    Booking toModel(CreateBookingRequestDto requestDto);
 
     @Mapping(source = "accommodation.id", target = "accommodationId")
     @Mapping(source = "user.id", target = "userId")
-    BookingResponseDto toResponseDto(Booking entity);
+    BookingResponseDto toResponseDto(Booking booking);
 }
