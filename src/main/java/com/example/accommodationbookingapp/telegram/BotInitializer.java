@@ -13,6 +13,7 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 public class BotInitializer {
 
     private final TelegramBot bot;
+    private static final String INIT_ERR = "Cannot initialize the Bot";
 
     @EventListener({ContextRefreshedEvent.class})
     public void init() throws TelegramApiException {
@@ -20,7 +21,7 @@ public class BotInitializer {
         try {
             telegramBotsApi.registerBot(bot);
         } catch (TelegramApiException e) {
-            throw new RuntimeException("Cannot initialize the Bot" + e.getMessage());
+            throw new RuntimeException(INIT_ERR + e.getMessage());
         }
     }
 }

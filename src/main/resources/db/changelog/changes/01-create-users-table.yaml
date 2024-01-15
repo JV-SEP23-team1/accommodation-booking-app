@@ -13,7 +13,7 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
               - column:
-                  name: chat_Id
+                  name: chat_id
                   type: bigint
                   constraints:
                     unique: true
