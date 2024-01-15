@@ -13,6 +13,11 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
               - column:
+                  name: chat_Id
+                  type: bigint
+                  constraints:
+                    unique: true
+              - column:
                   name: email
                   type: varchar(255)
                   constraints:
