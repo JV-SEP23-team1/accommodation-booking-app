@@ -54,6 +54,11 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         return handleException(HttpStatus.FORBIDDEN, ex);
     }
 
+    @ExceptionHandler({EntityNotFoundException.class})
+    protected ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException ex) {
+        return handleException(HttpStatus.NOT_FOUND, ex);
+    }
+
     private ResponseEntity<Object> handleException(HttpStatus status, Exception ex) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());
