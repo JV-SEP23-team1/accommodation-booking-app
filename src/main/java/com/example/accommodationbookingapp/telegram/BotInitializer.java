@@ -11,9 +11,8 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 @Component
 @RequiredArgsConstructor
 public class BotInitializer {
-
-    private final TelegramBot bot;
     private static final String INIT_ERR = "Cannot initialize the Bot";
+    private final TelegramBot bot;
 
     @EventListener({ContextRefreshedEvent.class})
     public void init() throws TelegramApiException {
