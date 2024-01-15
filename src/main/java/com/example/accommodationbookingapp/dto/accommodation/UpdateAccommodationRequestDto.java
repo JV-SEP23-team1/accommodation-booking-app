@@ -11,7 +11,7 @@ public class UpdateAccommodationRequestDto {
     private Accommodation.Type type;
     private String location;
     private String size;
-    private List<String> amenities;
+    private List<Long> amenitiesIds;
     @Positive
     private BigDecimal dailyRate;
     @Positive

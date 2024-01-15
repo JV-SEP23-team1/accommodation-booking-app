@@ -15,7 +15,7 @@ public class CreateAccommodationRequestDto {
     @NotBlank
     private String size;
     @NotNull
-    private List<String> amenitiesNames;
+    private List<Long> amenitiesIds;
     @NotNull
     @Positive
     private BigDecimal dailyRate;
