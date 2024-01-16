@@ -47,7 +47,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         Session session = sessionService.createPaymentSession(totalCost);
 
-        Payment createdPayment = buildPayment(session, booking);
+        Payment createdPayment = buildPayment(session, booking, totalCost);
         Payment savedPayment = paymentRepository.save(createdPayment);
         return paymentMapper.paymentToPaymentResponseDto(savedPayment);
     }
@@ -62,12 +62,12 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentMapper.paymentToPaymentResponseDto(updatedPayment);
     }
 
-    private Payment buildPayment(Session session, Booking booking) throws MalformedURLException {
+    private Payment buildPayment(Session session, Booking booking, BigDecimal amountToPay) throws MalformedURLException {
         Payment payment = new Payment();
         payment.setSessionUrl(new URL(session.getUrl()));
         payment.setSessionId(session.getId());
         payment.setBooking(booking);
-        payment.setAmountToPay(new BigDecimal("100.00"));
+        payment.setAmountToPay(amountToPay);
         payment.setStatus(Payment.Status.PENDING);
         return payment;
     }
