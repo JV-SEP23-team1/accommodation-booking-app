@@ -4,7 +4,7 @@ import com.example.accommodationbookingapp.dto.payment.CreatePaymentDto;
 import com.example.accommodationbookingapp.dto.payment.PaymentResponseDto;
 import com.example.accommodationbookingapp.model.Payment;
 import com.example.accommodationbookingapp.service.payment.PaymentService;
-import com.example.accommodationbookingapp.service.url.UrlService;
+import com.example.accommodationbookingapp.service.url.UriService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PaymentController {
 
     private PaymentService paymentService;
-    private UrlService urlService;
+    private UriService uriService;
 
     @GetMapping("/{id}")
     @Operation(summary = "Get Payments by User ID",
@@ -43,7 +43,7 @@ public class PaymentController {
                                                      HttpServletResponse response)
             throws IOException {
         PaymentResponseDto createdPaymentDto = paymentService.create(requestDto.getBookingId());
-        URI redirectUrl = urlService.buildUrlWithSessionId(
+        URI redirectUrl = uriService.buildUriWithSessionId(
                 createdPaymentDto.getSessionId(),
                 createdPaymentDto.getSessionUrl());
         response.sendRedirect(String.valueOf(redirectUrl));
