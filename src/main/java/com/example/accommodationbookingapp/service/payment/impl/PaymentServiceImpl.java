@@ -32,7 +32,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<PaymentResponseDto> findAllByUserId(Long userId) {
-        List<Payment> paymentsFromDb = paymentRepository.findAllByBooking_User_Id(userId);
+        List<Payment> paymentsFromDb = paymentRepository.findAllByUserId(userId);
         return paymentMapper.paymentsToPaymentResponseDtos(paymentsFromDb);
     }
 
