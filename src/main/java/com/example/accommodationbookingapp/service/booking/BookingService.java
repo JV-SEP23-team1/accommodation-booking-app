@@ -5,18 +5,14 @@ import com.example.accommodationbookingapp.dto.booking.CreateBookingRequestDto;
 import com.example.accommodationbookingapp.dto.booking.UpdateBookingRequestDto;
 import com.example.accommodationbookingapp.model.Booking;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 
 public interface BookingService {
     BookingResponseDto createBooking(Long userId, CreateBookingRequestDto requestDto);
 
-    List<BookingResponseDto> getBookingsByUserIdAndStatus(
-            Long userId,
-            Booking.Status status,
-            Pageable pageable
-    );
-
-    List<BookingResponseDto> getBookingsByStatus(
+    List<BookingResponseDto> getBookings(
+            Optional<Long> optionalId,
             Booking.Status status,
             Pageable pageable
     );
@@ -31,5 +27,5 @@ public interface BookingService {
             UpdateBookingRequestDto requestDto
     );
 
-    void deleteById(Long id);
+    void deleteByBookingIdAndUserId(Long bookingId, Long userId);
 }

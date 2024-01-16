@@ -19,4 +19,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @EntityGraph(attributePaths = {"accommodation", "user"})
     Optional<Booking> findByIdAndUserId(Long bookingId, Long userId);
+
+    @EntityGraph(attributePaths = {"accommodation", "user"})
+    void deleteByIdAndUserId(Long bookingId, Long userId);
 }

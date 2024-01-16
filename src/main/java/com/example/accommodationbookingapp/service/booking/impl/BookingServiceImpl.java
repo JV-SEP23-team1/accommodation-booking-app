@@ -13,6 +13,7 @@ import com.example.accommodationbookingapp.repository.booking.BookingRepository;
 import com.example.accommodationbookingapp.repository.user.UserRepository;
 import com.example.accommodationbookingapp.service.booking.BookingService;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -52,7 +53,16 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookingResponseDto> getBookingsByUserIdAndStatus(
+    public List<BookingResponseDto> getBookings(
+            Optional<Long> optionalId,
+            Booking.Status status,
+            Pageable pageable
+    ) {
+        return optionalId.map(id -> getBookingsByUserIdAndStatus(id, status, pageable))
+                .orElseGet(() -> getBookingsByStatus(status, pageable));
+    }
+
+    private List<BookingResponseDto> getBookingsByUserIdAndStatus(
             Long userId,
             Booking.Status status,
             Pageable pageable
@@ -63,8 +73,7 @@ public class BookingServiceImpl implements BookingService {
                 .toList();
     }
 
-    @Override
-    public List<BookingResponseDto> getBookingsByStatus(
+    private List<BookingResponseDto> getBookingsByStatus(
             Booking.Status status,
             Pageable pageable
     ) {
@@ -106,8 +115,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public void deleteById(Long id) {
-        bookingRepository.deleteById(id);
+    public void deleteByBookingIdAndUserId(Long bookingId, Long userId) {
+        bookingRepository.deleteByIdAndUserId(bookingId, userId);
     }
 
     private Booking getByBookingIdAndUserId(Long bookingId, Long userId) {
