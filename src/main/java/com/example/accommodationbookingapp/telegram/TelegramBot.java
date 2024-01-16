@@ -1,5 +1,6 @@
 package com.example.accommodationbookingapp.telegram;
 
+import com.example.accommodationbookingapp.model.Amenity;
 import com.example.accommodationbookingapp.model.Booking;
 import com.example.accommodationbookingapp.model.User;
 import com.example.accommodationbookingapp.repository.booking.BookingRepository;
@@ -39,23 +40,11 @@ public class TelegramBot extends TelegramLongPollingBot {
             + "Please double-check your email and password and try again.";
     private static final String YES_BUTTON = "YES_BUTTON";
     private static final String NO_BUTTON = "NO_BUTTON";
-    private static final String HELP_TEXT = """
-            Welcome to the Accommodation-Booking-App Notification Bot!
+    private static final String LAST_WEEK = "Last week";
+    private static final String LAST_MONTH = "Last month";
+    private static final String LAST_YEAR = "Last year";
+    private static final String FUTURE = "Future";
 
-            Explore various commands from the menu on the left or by typing a specific command:
-
-            Type /start to see a welcome message
-
-            Type /authenticate to begin the authentication process to start receiving notifications.
-            
-            Bot will request you to type email and password
-            which you have used when register in Accommodation-Booking-App.
-            
-            NOTE: For security reasons, your credentials will be deleted after authentication!
-
-            Type /cancel to stop receiving notifications from this bot.
-            
-            Type /help to see this message again""";
     private final List<Integer> messageIds = new ArrayList<>();
     private final Map<Long, AuthenticationContext> authenticationContextMap = new HashMap<>();
     private final UserRepository userRepository;
@@ -63,6 +52,8 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final BookingRepository bookingRepository;
     @Value("${admin.chatId}")
     private Long adminChatId;
+    @Value("${bot.help-text}")
+    private String helpText;
 
     @Autowired
     public TelegramBot(@Value("${bot.token}") String botToken, UserRepository userRepository,
@@ -71,8 +62,9 @@ public class TelegramBot extends TelegramLongPollingBot {
         List<BotCommand> listOfCommands = new ArrayList<>();
         listOfCommands.add(new BotCommand("/start", "get a welcome message"));
         listOfCommands.add(new BotCommand("/help", "info how to use this bot"));
-        listOfCommands.add(new BotCommand("/authenticate", "set your preferences"));
-        listOfCommands.add(new BotCommand("/cancel", "set your preferences"));
+        listOfCommands.add(new BotCommand("/authenticate", "start getting notifications"));
+        listOfCommands.add(new BotCommand("/cancel", "stop receiving notifications"));
+        listOfCommands.add(new BotCommand("/bookings", "get all bookings"));
         try {
             this.execute(new SetMyCommands(listOfCommands, new BotCommandScopeDefault(),null));
         } catch (TelegramApiException e) {
@@ -91,43 +83,82 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
-            String messageText = update.getMessage().getText();
-            long chatId = update.getMessage().getChatId();
-
-            if (authenticationContextMap.containsKey(chatId)) {
-                handleAuthentication(chatId, messageText, update);
-            } else {
-                switch (messageText) {
-                    case "/start":
-                        startCommandReceived(chatId, update.getMessage().getChat().getFirstName());
-                        break;
-                    case "/help":
-                        sendMessage(chatId, HELP_TEXT);
-                        break;
-                    case "/cancel":
-                        beforeCancel(chatId);
-                        break;
-                    case "/authenticate":
-                        startAuthentication(chatId);
-                        break;
-                    default:
-                        sendMessage(chatId, "Sorry, command was not recognized");
-                }
-            }
+            handleTextMessage(update);
         } else if (update.hasCallbackQuery()) {
-            String callbackData = update.getCallbackQuery().getData();
-            long messageId = update.getCallbackQuery().getMessage().getMessageId();
-            long chatId = update.getCallbackQuery().getMessage().getChatId();
-
-            if (callbackData.equals(YES_BUTTON)) {
-                cancelNotification(chatId);
-                String text = "You are successfully cancel notification service";
-                executeEditMessageText(text, chatId, messageId);
-            } else if (callbackData.equals(NO_BUTTON)) {
-                String text = "Thank you for staying with us ❤️";
-                executeEditMessageText(text, chatId, messageId);
-            }
+            handleCallbackQuery(update);
         }
+    }
+
+    private void handleTextMessage(Update update) {
+        String messageText = update.getMessage().getText();
+        long chatId = update.getMessage().getChatId();
+
+        if (authenticationContextMap.containsKey(chatId)) {
+            handleAuthentication(chatId, messageText, update);
+        } else {
+            processCommand(messageText, chatId, update);
+        }
+    }
+
+    private void processCommand(String messageText, long chatId, Update update) {
+        switch (messageText) {
+            case "/start":
+                startCommandReceived(chatId, update.getMessage().getChat().getFirstName());
+                break;
+            case "/help":
+                sendMessage(chatId, helpText);
+                break;
+            case "/cancel":
+                beforeCancel(chatId);
+                break;
+            case "/authenticate":
+                startAuthentication(chatId);
+                break;
+            case "/bookings":
+                beforeBooking(chatId);
+                break;
+            default:
+                sendMessage(chatId, "Sorry, command was not recognized");
+        }
+    }
+
+    private void handleCallbackQuery(Update update) {
+        String callbackData = update.getCallbackQuery().getData();
+        long messageId = update.getCallbackQuery().getMessage().getMessageId();
+        long chatId = update.getCallbackQuery().getMessage().getChatId();
+
+        switch (callbackData) {
+            case LAST_WEEK:
+                handleDateCallback(chatId, messageId, LocalDate.now().minusDays(7),
+                        LocalDate.now(), "Bookings for last week");
+                break;
+            case LAST_MONTH:
+                handleDateCallback(chatId, messageId, LocalDate.now().minusDays(30),
+                        LocalDate.now(), "Bookings for last month");
+                break;
+            case LAST_YEAR:
+                handleDateCallback(chatId, messageId, LocalDate.now().minusDays(365),
+                        LocalDate.now(), "Bookings for last year");
+                break;
+            case FUTURE:
+                handleDateCallback(chatId, messageId, LocalDate.now(),
+                        LocalDate.now().plusYears(1), "Future Bookings");
+                break;
+            case YES_BUTTON:
+                cancelNotification(chatId);
+                executeEditMessageText("You are successfully cancel notification service",
+                        chatId, messageId);
+                break;
+            default:
+                executeEditMessageText("Thank you for staying with us ❤️", chatId, messageId);
+                break;
+        }
+    }
+
+    private void handleDateCallback(long chatId, long messageId, LocalDate startDate,
+                                    LocalDate endDate, String successMessage) {
+        getUserBookings(chatId, startDate, endDate);
+        executeEditMessageText(successMessage, chatId, messageId);
     }
 
     public void sendMessage(Long chatId,String message) {
@@ -268,7 +299,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         int counterOfSendingMessageToUser = 0;
         List<Booking> allBookings = bookingRepository.findAll();
         for (var booking : allBookings) {
-            if (booking.getCheckOutDate().isBefore(LocalDate.now().plusDays(2))
+            if (booking.getCheckOutDate().equals(LocalDate.now().plusDays(1))
                     && booking.getStatus() != Booking.Status.CANCELED) {
 
                 booking.setStatus(Booking.Status.EXPIRED);
@@ -293,6 +324,87 @@ public class TelegramBot extends TelegramLongPollingBot {
                 + booking.getAccommodation().getType()
                 + " by location: " + booking.getAccommodation().getLocation()
                 + " will be expired on " + booking.getCheckOutDate();
+    }
+
+    private void getUserBookings(Long chatId, LocalDate startDate, LocalDate endDate) {
+        if (!userRepository.existsUserByChatId(chatId)) {
+            sendMessage(chatId, "Firstly authenticate");
+            return;
+        }
+        User user = userRepository.findByChatId(chatId).get();
+        List<Booking> bookings = bookingRepository.findAllByUserIdAndCheckInDateIsAfter(
+                user.getId(), startDate, endDate);
+        sendMessage(chatId, formBookingMessage(bookings));
+    }
+
+    private String formBookingMessage(List<Booking> bookings) {
+        StringBuilder message = new StringBuilder("Your bookings: ");
+        for (var booking : bookings) {
+            message.append(System.lineSeparator()).append(System.lineSeparator())
+                    .append("Type: ").append(booking.getAccommodation().getType())
+                    .append(System.lineSeparator())
+                    .append("Location: ").append(booking.getAccommodation().getLocation())
+                    .append(System.lineSeparator())
+                    .append("Size: ").append(booking.getAccommodation().getSize())
+                    .append(System.lineSeparator())
+                    .append("Check-in date: ").append(booking.getCheckInDate())
+                    .append(System.lineSeparator())
+                    .append("Check-out date: ").append(booking.getCheckOutDate())
+                    .append(System.lineSeparator())
+                    .append("Amenities: ");
+            List<Amenity> amenities = booking.getAccommodation().getAmenities();
+            if (amenities.isEmpty()) {
+                message.append("None");
+            } else {
+                for (var amenity : amenities) {
+                    message.append(amenity.getName()).append(", ");
+                }
+                message.delete(message.length() - 2, message.length());
+            }
+        }
+        return message.toString();
+    }
+
+    private void beforeBooking(Long chatId) {
+        SendMessage message = new SendMessage();
+        message.setChatId(String.valueOf(chatId));
+        message.setText("For what period you want get bookings?");
+
+        var weekButton = new InlineKeyboardButton();
+
+        weekButton.setText("Last week");
+        weekButton.setCallbackData(LAST_WEEK);
+
+        var monthButton = new InlineKeyboardButton();
+
+        monthButton.setText("Last month");
+        monthButton.setCallbackData(LAST_MONTH);
+
+        var yearButton = new InlineKeyboardButton();
+
+        yearButton.setText("Last year");
+        yearButton.setCallbackData(LAST_YEAR);
+
+        var futureButton = new InlineKeyboardButton();
+
+        futureButton.setText("Future");
+        futureButton.setCallbackData(FUTURE);
+
+        List<InlineKeyboardButton> rowInLine = new ArrayList<>();
+
+        rowInLine.add(weekButton);
+        rowInLine.add(monthButton);
+        rowInLine.add(yearButton);
+        rowInLine.add(futureButton);
+
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        rowsInLine.add(rowInLine);
+
+        InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
+        markupInLine.setKeyboard(rowsInLine);
+        message.setReplyMarkup(markupInLine);
+
+        executeMessage(message);
     }
 
     @Getter
