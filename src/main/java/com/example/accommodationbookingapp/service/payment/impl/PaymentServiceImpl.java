@@ -7,6 +7,7 @@ import com.example.accommodationbookingapp.model.Payment;
 import com.example.accommodationbookingapp.repository.booking.BookingRepository;
 import com.example.accommodationbookingapp.repository.payment.PaymentRepository;
 import com.example.accommodationbookingapp.service.date.DateService;
+import com.example.accommodationbookingapp.service.notification.NotificationService;
 import com.example.accommodationbookingapp.service.payment.PaymentService;
 import com.example.accommodationbookingapp.service.session.SessionService;
 import com.stripe.model.checkout.Session;
@@ -29,6 +30,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final SessionService sessionService;
     private final BookingRepository bookingRepository;
     private final DateService dateService;
+    private final NotificationService notificationService;
 
     @Override
     public List<PaymentResponseDto> findAllByUserId(Long userId) {
@@ -49,7 +51,10 @@ public class PaymentServiceImpl implements PaymentService {
 
         Payment createdPayment = buildPayment(session, bookingId, totalCost);
         Payment savedPayment = paymentRepository.save(createdPayment);
-        return paymentMapper.paymentToPaymentResponseDto(savedPayment);
+        PaymentResponseDto paymentResponseDto = paymentMapper
+                .paymentToPaymentResponseDto(savedPayment);
+        notificationService.sendPaymentMessage(paymentResponseDto);
+        return paymentResponseDto;
     }
 
     @Override

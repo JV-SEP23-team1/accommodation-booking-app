@@ -2,7 +2,10 @@ package com.example.accommodationbookingapp.service.notification.impl;
 
 import com.example.accommodationbookingapp.dto.accommodation.AccommodationResponseDto;
 import com.example.accommodationbookingapp.dto.booking.BookingResponseDto;
+import com.example.accommodationbookingapp.dto.payment.PaymentResponseDto;
+import com.example.accommodationbookingapp.model.Booking;
 import com.example.accommodationbookingapp.model.User;
+import com.example.accommodationbookingapp.repository.booking.BookingRepository;
 import com.example.accommodationbookingapp.repository.user.UserRepository;
 import com.example.accommodationbookingapp.service.notification.NotificationService;
 import com.example.accommodationbookingapp.telegram.TelegramBot;
@@ -17,6 +20,7 @@ public class TelegramNotificationService implements NotificationService {
     private Long adminChatId;
     private final TelegramBot telegramBot;
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
 
     @Override
     public void sendNotification(Long chatId, String message) {
@@ -68,5 +72,15 @@ public class TelegramNotificationService implements NotificationService {
         String message = "You updated an existing booking!"
                 + "\nTo get new info about your bookings type /bookings";
         sendNotification(chatId, message);
+    }
+
+    @Override
+    public void sendPaymentMessage(PaymentResponseDto responseDto) {
+        Booking booking = bookingRepository.findById(responseDto.getBookingId()).get();
+        User user = userRepository.findById(booking.getId()).get();
+        String message = "You successfully paid" + responseDto.getAmountToPay()
+                + " dollars for your booking \n "
+                + "To get more info about your bookings type /bookings";
+        sendNotification(user.getChatId(), message);
     }
 }
