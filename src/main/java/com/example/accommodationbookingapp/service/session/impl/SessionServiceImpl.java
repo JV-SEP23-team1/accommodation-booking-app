@@ -1,9 +1,14 @@
 package com.example.accommodationbookingapp.service.session.impl;
 
+import com.example.accommodationbookingapp.model.Booking;
 import com.example.accommodationbookingapp.service.session.SessionService;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
+import com.stripe.model.Price;
+import com.stripe.model.Product;
 import com.stripe.model.checkout.Session;
+import com.stripe.param.PriceCreateParams;
+import com.stripe.param.ProductCreateParams;
 import com.stripe.param.checkout.SessionCreateParams;
 import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +31,7 @@ public class SessionServiceImpl implements SessionService {
     private String stripeApiKey;
 
     @Override
-    public Session createPaymentSession(BigDecimal bookingPrice) {
+    public Session createPaymentSession(BigDecimal bookingPrice, Booking booking) {
         Stripe.apiKey = stripeApiKey;
         try {
             String successUrl = UriComponentsBuilder.fromUriString(stripeDomainUrl)
@@ -37,6 +42,9 @@ public class SessionServiceImpl implements SessionService {
                     .build().toUriString();
 
             Long priceInCents = bookingPrice.multiply(BigDecimal.valueOf(100)).longValue();
+            Product product = createProduct(booking.getAccommodation().getType().toString());
+
+            Price price = createPrice(USD, priceInCents, product.getId());
 
             SessionCreateParams params = SessionCreateParams.builder()
                     .setMode(SessionCreateParams.Mode.PAYMENT)
@@ -58,5 +66,21 @@ public class SessionServiceImpl implements SessionService {
         } catch (StripeException e) {
             throw new RuntimeException(ERROR_CREATING_PAYMENT_SESSION, e);
         }
+    }
+
+    private Product createProduct(String productName) throws StripeException {
+        ProductCreateParams productParams = ProductCreateParams.builder()
+                .setName(productName)
+                .build();
+        return Product.create(productParams);
+    }
+
+    private Price createPrice(String currency, Long unitAmount, String productId) throws StripeException {
+        PriceCreateParams priceParams = PriceCreateParams.builder()
+                .setCurrency(currency)
+                .setUnitAmount(unitAmount)
+                .setProduct(productId)
+                .build();
+        return Price.create(priceParams);
     }
 }
