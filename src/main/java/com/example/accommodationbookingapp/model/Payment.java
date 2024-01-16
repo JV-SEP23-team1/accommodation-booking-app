@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.net.URL;
@@ -27,9 +26,8 @@ public class Payment {
     private URL sessionUrl;
     @Column(name = "session_id", nullable = false)
     private String sessionId;
-    @OneToOne
     @JoinColumn(name = "booking_id", nullable = false)
-    private Booking booking;
+    private Long bookingId;
     @Column(name = "amount_to_pay", nullable = false)
     private BigDecimal amountToPay;
 

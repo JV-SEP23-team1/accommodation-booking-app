@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     @EntityGraph(attributePaths = {"accommodation", "user"})
@@ -29,4 +30,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             + " WHERE b.user.id = :userId AND b.checkInDate BETWEEN :startDate AND :endDate")
     List<Booking> findAllByUserIdAndCheckInDateIsAfter(Long userId,
                                                        LocalDate startDate, LocalDate endDate);
+
+    @Query("SELECT b FROM Booking b JOIN FETCH b.accommodation WHERE b.id = :bookingId")
+    Optional<Booking> findBookingWithAccommodationById(@Param("bookingId") Long bookingId);
 }

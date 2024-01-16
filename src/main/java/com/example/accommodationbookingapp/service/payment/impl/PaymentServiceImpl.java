@@ -24,21 +24,21 @@ public class PaymentServiceImpl implements PaymentService {
             "Didn't find Payment with SessionId:";
     private static final String DIDNT_FIND_BOOKING_WITH_ID =
             "Didn't find Booking with ID:";
-    private PaymentRepository paymentRepository;
-    private PaymentMapper paymentMapper;
-    private SessionService sessionService;
-    private BookingRepository bookingRepository;
-    private DateService dateService;
+    private final PaymentRepository paymentRepository;
+    private final PaymentMapper paymentMapper;
+    private final SessionService sessionService;
+    private final BookingRepository bookingRepository;
+    private final DateService dateService;
 
     @Override
     public List<PaymentResponseDto> findAllByUserId(Long userId) {
-        List<Payment> paymentsFromDb = paymentRepository.findAllByBooking_User_Id(userId);
+        List<Payment> paymentsFromDb = paymentRepository.findAllByUserId(userId);
         return paymentMapper.paymentsToPaymentResponseDtos(paymentsFromDb);
     }
 
     @Override
     public PaymentResponseDto create(Long bookingId) throws MalformedURLException {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(
+        Booking booking = bookingRepository.findBookingWithAccommodationById(bookingId).orElseThrow(
                 () -> new RuntimeException(DIDNT_FIND_BOOKING_WITH_ID + bookingId));
         long numberOfDays = dateService.calculateDurationInDays(
                 booking.getCheckInDate(), booking.getCheckOutDate());
@@ -47,7 +47,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         Session session = sessionService.createPaymentSession(totalCost);
 
-        Payment createdPayment = buildPayment(session, booking, totalCost);
+        Payment createdPayment = buildPayment(session, bookingId, totalCost);
         Payment savedPayment = paymentRepository.save(createdPayment);
         return paymentMapper.paymentToPaymentResponseDto(savedPayment);
     }
@@ -62,12 +62,12 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentMapper.paymentToPaymentResponseDto(updatedPayment);
     }
 
-    private Payment buildPayment(Session session, Booking booking, BigDecimal amountToPay)
+    private Payment buildPayment(Session session, Long bookingId, BigDecimal amountToPay)
             throws MalformedURLException {
         Payment payment = new Payment();
         payment.setSessionUrl(new URL(session.getUrl()));
         payment.setSessionId(session.getId());
-        payment.setBooking(booking);
+        payment.setBookingId(bookingId);
         payment.setAmountToPay(amountToPay);
         payment.setStatus(Payment.Status.PENDING);
         return payment;
