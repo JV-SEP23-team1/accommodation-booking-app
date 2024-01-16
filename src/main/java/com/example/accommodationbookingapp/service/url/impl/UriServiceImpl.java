@@ -3,7 +3,6 @@ package com.example.accommodationbookingapp.service.url.impl;
 import com.example.accommodationbookingapp.service.url.UriService;
 import java.net.URI;
 import java.net.URL;
-
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 

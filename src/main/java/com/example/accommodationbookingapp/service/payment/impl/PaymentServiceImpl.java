@@ -4,28 +4,31 @@ import com.example.accommodationbookingapp.dto.payment.PaymentResponseDto;
 import com.example.accommodationbookingapp.mapper.PaymentMapper;
 import com.example.accommodationbookingapp.model.Booking;
 import com.example.accommodationbookingapp.model.Payment;
+import com.example.accommodationbookingapp.repository.booking.BookingRepository;
 import com.example.accommodationbookingapp.repository.payment.PaymentRepository;
+import com.example.accommodationbookingapp.service.date.DateService;
 import com.example.accommodationbookingapp.service.payment.PaymentService;
-
+import com.example.accommodationbookingapp.service.session.SessionService;
+import com.stripe.model.checkout.Session;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-
-import com.example.accommodationbookingapp.service.session.SessionService;
-import com.stripe.model.checkout.Session;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
-    public static final String DIDNT_FIND_PAYMENT_WITH_SESSION_ID =
+    private static final String DIDNT_FIND_PAYMENT_WITH_SESSION_ID =
             "Didn't find Payment with SessionId:";
+    private static final String DIDNT_FIND_BOOKING_WITH_ID =
+            "Didn't find Booking with ID:";
     private PaymentRepository paymentRepository;
     private PaymentMapper paymentMapper;
     private SessionService sessionService;
-
+    private BookingRepository bookingRepository;
+    private DateService dateService;
 
     @Override
     public List<PaymentResponseDto> findAllByUserId(Long userId) {
@@ -35,10 +38,14 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentResponseDto create(Long bookingId) throws MalformedURLException {
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(
+                () -> new RuntimeException(DIDNT_FIND_BOOKING_WITH_ID + bookingId));
+        long numberOfDays = dateService.calculateDurationInDays(
+                booking.getCheckInDate(), booking.getCheckOutDate());
+        BigDecimal dailyRate = booking.getAccommodation().getDailyRate();
+        BigDecimal totalCost = dailyRate.multiply(BigDecimal.valueOf(numberOfDays));
 
-        Booking booking = new Booking();
-
-        Session session = sessionService.createPaymentSession(new BigDecimal("100.00"));
+        Session session = sessionService.createPaymentSession(totalCost);
 
         Payment createdPayment = buildPayment(session, booking);
         Payment savedPayment = paymentRepository.save(createdPayment);
@@ -64,5 +71,4 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setStatus(Payment.Status.PENDING);
         return payment;
     }
-
 }

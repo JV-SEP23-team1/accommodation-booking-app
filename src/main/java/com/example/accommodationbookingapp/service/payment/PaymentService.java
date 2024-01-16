@@ -2,7 +2,6 @@ package com.example.accommodationbookingapp.service.payment;
 
 import com.example.accommodationbookingapp.dto.payment.PaymentResponseDto;
 import com.example.accommodationbookingapp.model.Payment;
-
 import java.net.MalformedURLException;
 import java.util.List;
 

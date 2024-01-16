@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,12 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 @RequestMapping("/payments")
 @RequiredArgsConstructor
 public class PaymentController {
-
     private PaymentService paymentService;
     private UriService uriService;
 
@@ -37,8 +34,8 @@ public class PaymentController {
     }
 
     @PostMapping
-    @Operation(summary = "Create new  Payment",
-            description = "Create new  Payment using CreatePaymentDto")
+    @Operation(summary = "Create new Payment",
+            description = "Create new Payment using CreatePaymentDto")
     public PaymentResponseDto initiatePaymentSession(@RequestBody CreatePaymentDto requestDto,
                                                      HttpServletResponse response)
             throws IOException {
@@ -62,8 +59,6 @@ public class PaymentController {
     @Operation(summary = "Updated Payment status in case of canceled payment",
             description = "Updated Payment status to CANCELED in case of canceled payment")
     public PaymentResponseDto handlePaymentCancel(@RequestParam String sessionId) {
-
-
         return paymentService.update(sessionId, Payment.Status.CANCELED);
     }
 }

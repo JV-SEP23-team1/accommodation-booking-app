@@ -3,9 +3,8 @@ package com.example.accommodationbookingapp.mapper;
 import com.example.accommodationbookingapp.config.MapperConfig;
 import com.example.accommodationbookingapp.dto.payment.PaymentResponseDto;
 import com.example.accommodationbookingapp.model.Payment;
-import org.mapstruct.Mapper;
-
 import java.util.List;
+import org.mapstruct.Mapper;
 
 @Mapper(config = MapperConfig.class)
 public interface PaymentMapper {

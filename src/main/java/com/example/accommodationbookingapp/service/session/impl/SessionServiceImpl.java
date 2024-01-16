@@ -1,30 +1,41 @@
-package com.example.accommodationbookingapp.service.session;
+package com.example.accommodationbookingapp.service.session.impl;
 
+import com.example.accommodationbookingapp.service.session.SessionService;
+import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
+import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
 public class SessionServiceImpl implements SessionService {
     private static final String ERROR_CREATING_PAYMENT_SESSION
             = "Error creating payment session";
-    public static final String USD = "usd";
-    public static final long QUANTITY = 1L;
+    private static final String USD = "usd";
+    private static final long QUANTITY = 1L;
+    private static final String SUCCESS = "/success";
+    private static final String CANCEL = "/cancel";
     private UriComponentsBuilder uriComponentsBuilder;
     @Value("${stripe.domainUrl}")
     private String stripeDomainUrl;
+    @Value("${stripe.api.key}")
+    private String stripeApiKey;
+
     @Override
     public Session createPaymentSession(BigDecimal bookingPrice) {
+        Stripe.apiKey = stripeApiKey;
         try {
-            String successUrl = uriComponentsBuilder.path("/payments/success").build().toUriString();
-            String cancelUrl = uriComponentsBuilder.path("/payments/cancel").build().toUriString();
+            String successUrl = UriComponentsBuilder.fromUriString(stripeDomainUrl)
+                    .path(SUCCESS)
+                    .build().toUriString();
+            String cancelUrl = UriComponentsBuilder.fromUriString(stripeDomainUrl)
+                    .path(CANCEL)
+                    .build().toUriString();
 
             Long priceInCents = bookingPrice.multiply(BigDecimal.valueOf(100)).longValue();
 
