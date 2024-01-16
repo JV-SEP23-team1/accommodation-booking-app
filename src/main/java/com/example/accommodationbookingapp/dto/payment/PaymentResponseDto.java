@@ -12,6 +12,6 @@ public class PaymentResponseDto {
     private Payment.Status status;
     private URL sessionUrl;
     private String sessionId;
-    private Booking booking;
+    private Long bookingId;
     private BigDecimal amountToPay;
 }
