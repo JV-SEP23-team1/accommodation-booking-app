@@ -4,6 +4,7 @@ import com.example.accommodationbookingapp.dto.user.UserLoginRequestDto;
 import com.example.accommodationbookingapp.dto.user.UserLoginResponseDto;
 import com.example.accommodationbookingapp.dto.user.UserRegistrationRequestDto;
 import com.example.accommodationbookingapp.dto.user.UserResponseDto;
+import com.example.accommodationbookingapp.exception.AuthenticationException;
 import com.example.accommodationbookingapp.exception.RegistrationException;
 import com.example.accommodationbookingapp.security.AuthenticationService;
 import com.example.accommodationbookingapp.service.user.UserService;
@@ -39,7 +40,8 @@ public class AuthenticationController {
             summary = "Login using existing credentials",
             description = "Login using existing credentials"
     )
-    public UserLoginResponseDto login(@RequestBody @Valid UserLoginRequestDto requestDto) {
+    public UserLoginResponseDto login(@RequestBody @Valid UserLoginRequestDto requestDto)
+            throws AuthenticationException {
         return authenticationService.authenticate(requestDto);
     }
 }
