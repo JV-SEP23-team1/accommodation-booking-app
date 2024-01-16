@@ -68,13 +68,17 @@ class AccommodationServiceImplTest {
     @Test
     public void save_ValidAccommodation_Successful() {
 
-        when(accommodationMapper.toModel(createAccommodationRequestDto)).thenReturn(accommodationModel);
-        when(accommodationRepository.save(accommodationModel)).thenReturn(accommodationModel);
-        when(accommodationMapper.toResponseDto(accommodationModel)).thenReturn(accommodationResponseDto);
+        when(accommodationMapper.toModel(createAccommodationRequestDto))
+                .thenReturn(accommodationModel);
+        when(accommodationRepository.save(accommodationModel))
+                .thenReturn(accommodationModel);
+        when(accommodationMapper.toResponseDto(accommodationModel))
+                .thenReturn(accommodationResponseDto);
 
         AccommodationResponseDto expectedDto = accommodationResponseDto;
 
-        AccommodationResponseDto actualDto = accommodationServiceImpl.save(createAccommodationRequestDto);
+        AccommodationResponseDto actualDto = accommodationServiceImpl
+                .save(createAccommodationRequestDto);
 
         Assertions.assertNotNull(actualDto);
         Assertions.assertTrue(EqualsBuilder.reflectionEquals(expectedDto, actualDto, "id"));

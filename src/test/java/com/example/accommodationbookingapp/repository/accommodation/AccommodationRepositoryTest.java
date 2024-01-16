@@ -52,16 +52,17 @@ class AccommodationRepositoryTest {
     @Test
     @Sql(
             scripts = {
-                    "classpath:database/accommodations/add-accommodations-to-accommodations-table.sql",
-                    "classpath:database/accommodations_amenities/add-accommodations-amenities-to-accommodations_amenities-table.sql"
+                    "classpath:database/accommodations/add-accommodations.sql",
+                    "classpath:database/accommodations_amenities/add-accommodations-amenities.sql"
 
             },
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Sql(
             scripts = {
-                    "classpath:database/accommodations_amenities/delete-accommodations-amenities-from-accommodations_amenities-table.sql",
-                    "classpath:database/accommodations/delete-accommodations-from-accommodations-table.sql"
+                    "classpath:database/accommodations_amenities/"
+                            + "delete-accommodations-amenities.sql",
+                    "classpath:database/accommodations/delete-accommodations.sql"
             },
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
     )
