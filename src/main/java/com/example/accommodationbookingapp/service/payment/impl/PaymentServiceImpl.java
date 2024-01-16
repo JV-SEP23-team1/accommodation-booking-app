@@ -62,7 +62,8 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentMapper.paymentToPaymentResponseDto(updatedPayment);
     }
 
-    private Payment buildPayment(Session session, Booking booking, BigDecimal amountToPay) throws MalformedURLException {
+    private Payment buildPayment(Session session, Booking booking, BigDecimal amountToPay)
+            throws MalformedURLException {
         Payment payment = new Payment();
         payment.setSessionUrl(new URL(session.getUrl()));
         payment.setSessionId(session.getId());
