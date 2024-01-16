@@ -44,7 +44,7 @@ public class SessionServiceImpl implements SessionService {
             Long priceInCents = bookingPrice.multiply(BigDecimal.valueOf(100)).longValue();
             Product product = createProduct(booking.getAccommodation().getType().toString());
 
-            Price price = createPrice(USD, priceInCents, product.getId());
+            Price price = createPrice(priceInCents, product.getId());
 
             SessionCreateParams params = SessionCreateParams.builder()
                     .setMode(SessionCreateParams.Mode.PAYMENT)
@@ -75,9 +75,9 @@ public class SessionServiceImpl implements SessionService {
         return Product.create(productParams);
     }
 
-    private Price createPrice(String currency, Long unitAmount, String productId) throws StripeException {
+    private Price createPrice(Long unitAmount, String productId) throws StripeException {
         PriceCreateParams priceParams = PriceCreateParams.builder()
-                .setCurrency(currency)
+                .setCurrency(SessionServiceImpl.USD)
                 .setUnitAmount(unitAmount)
                 .setProduct(productId)
                 .build();
