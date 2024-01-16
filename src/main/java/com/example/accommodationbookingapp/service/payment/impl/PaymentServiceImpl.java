@@ -38,7 +38,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentResponseDto create(Long bookingId) throws MalformedURLException {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(
+        Booking booking = bookingRepository.findBookingWithAccommodationById(bookingId).orElseThrow(
                 () -> new RuntimeException(DIDNT_FIND_BOOKING_WITH_ID + bookingId));
         long numberOfDays = dateService.calculateDurationInDays(
                 booking.getCheckInDate(), booking.getCheckOutDate());
