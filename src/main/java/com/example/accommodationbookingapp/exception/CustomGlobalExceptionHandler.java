@@ -66,6 +66,13 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         return handleException(HttpStatus.BAD_REQUEST, ex);
     }
 
+    @ExceptionHandler({IllegalStateException.class})
+    protected ResponseEntity<Object> handleIllegalStateException(
+            IllegalStateException ex
+    ) {
+        return handleException(HttpStatus.FORBIDDEN, ex);
+    }
+
     private ResponseEntity<Object> handleException(HttpStatus status, Exception ex) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());

@@ -33,4 +33,15 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("SELECT b FROM Booking b JOIN FETCH b.accommodation WHERE b.id = :bookingId")
     Optional<Booking> findBookingWithAccommodationById(@Param("bookingId") Long bookingId);
+
+    @Query("SELECT count(*) > 0 FROM Booking b WHERE b.accommodation.id = :accommodationId AND ("
+            + "            :checkInDate BETWEEN b.checkInDate AND b.checkOutDate"
+            + "            OR :checkOutDate BETWEEN b.checkInDate AND b.checkOutDate"
+            + "            OR b.checkInDate BETWEEN :checkInDate AND :checkOutDate"
+            + "            OR b.checkOutDate BETWEEN :checkInDate AND :checkOutDate"
+            + "    ) ")
+    boolean existBookingAccommodationWithSameDate(
+            Long accommodationId,
+            LocalDate checkInDate,
+            LocalDate checkOutDate);
 }
