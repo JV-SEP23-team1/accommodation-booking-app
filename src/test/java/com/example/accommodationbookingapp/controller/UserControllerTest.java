@@ -2,8 +2,11 @@ package com.example.accommodationbookingapp.controller;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.example.accommodationbookingapp.dto.user.UserResponseDto;
+import com.example.accommodationbookingapp.dto.user.UserUpdateRequestDto;
 import com.example.accommodationbookingapp.dto.user.UserWithRolesResponseDto;
 import com.example.accommodationbookingapp.model.Role;
 import com.example.accommodationbookingapp.model.User;
@@ -31,6 +34,8 @@ class UserControllerTest {
     protected static MockMvc mockMvc;
 
     private static UserWithRolesResponseDto userWithRolesResponseDto;
+    private static UserUpdateRequestDto userUpdateRequestDto;
+    private static UserResponseDto userResponseDto;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -48,6 +53,19 @@ class UserControllerTest {
         userWithRolesResponseDto.setFirstName("John");
         userWithRolesResponseDto.setLastName("Doe");
         userWithRolesResponseDto.setRoleNames(Set.of(Role.RoleName.USER));
+
+        userUpdateRequestDto = new UserUpdateRequestDto();
+        userUpdateRequestDto.setFirstName("John");
+        userUpdateRequestDto.setLastName("Doe");
+        userUpdateRequestDto.setEmail("john@gmail.com");
+        userUpdateRequestDto.setOldPassword("12345678");
+        userUpdateRequestDto.setNewPassword("111111");
+
+        userResponseDto = new UserResponseDto();
+        userResponseDto.setId(1L);
+        userResponseDto.setFirstName(userUpdateRequestDto.getFirstName());
+        userResponseDto.setLastName(userUpdateRequestDto.getLastName());
+        userResponseDto.setEmail(userUpdateRequestDto.getEmail());
     }
 
     @BeforeEach
@@ -82,6 +100,27 @@ class UserControllerTest {
         UserWithRolesResponseDto actual = objectMapper.readValue(
                 result.getResponse().getContentAsString(),
                 UserWithRolesResponseDto.class
+        );
+
+        Assertions.assertTrue(EqualsBuilder.reflectionEquals(expected, actual, "id"));
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = "USER")
+    public void updateFullUserProfile_ValidUpdate_Successful() throws Exception {
+        MvcResult result = mockMvc.perform(
+                put("/users/me")
+                        .content(objectMapper.writeValueAsString(userUpdateRequestDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        UserResponseDto expected = userResponseDto;
+
+        UserResponseDto actual = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                UserResponseDto.class
         );
 
         Assertions.assertTrue(EqualsBuilder.reflectionEquals(expected, actual, "id"));
