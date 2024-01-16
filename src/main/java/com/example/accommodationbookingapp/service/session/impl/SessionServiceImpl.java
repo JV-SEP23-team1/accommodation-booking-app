@@ -20,7 +20,6 @@ public class SessionServiceImpl implements SessionService {
     private static final long QUANTITY = 1L;
     private static final String SUCCESS = "/success";
     private static final String CANCEL = "/cancel";
-    private UriComponentsBuilder uriComponentsBuilder;
     @Value("${stripe.domainUrl}")
     private String stripeDomainUrl;
     @Value("${stripe.api.key}")
