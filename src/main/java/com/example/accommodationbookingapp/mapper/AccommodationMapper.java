@@ -13,15 +13,15 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(config = MapperConfig.class)
 public interface AccommodationMapper {
-    @Mapping(target = "amenities", ignore = true)
+    @Mapping(target = "amenitiesIds", ignore = true)
     AccommodationResponseDto toResponseDto(Accommodation accommodation);
 
     @AfterMapping
-    default void setAmenitiesNames(@MappingTarget AccommodationResponseDto responseDto,
+    default void setAmenitiesIds(@MappingTarget AccommodationResponseDto responseDto,
                               Accommodation accommodation) {
         if (accommodation.getAmenities() != null) {
-            responseDto.setAmenities(accommodation.getAmenities().stream()
-                    .map(Amenity::getName)
+            responseDto.setAmenitiesIds(accommodation.getAmenities().stream()
+                    .map(Amenity::getId)
                     .collect(Collectors.toList()));
         }
     }
@@ -32,8 +32,8 @@ public interface AccommodationMapper {
     @AfterMapping
     default void setAmenities(@MappingTarget Accommodation accommodation,
                               CreateAccommodationRequestDto requestDto) {
-        if (requestDto.getAmenitiesNames() != null) {
-            accommodation.setAmenities(requestDto.getAmenitiesNames().stream()
+        if (requestDto.getAmenitiesIds() != null) {
+            accommodation.setAmenities(requestDto.getAmenitiesIds().stream()
                     .map(Amenity::new)
                     .toList());
         }

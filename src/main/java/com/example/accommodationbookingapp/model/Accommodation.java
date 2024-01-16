@@ -19,7 +19,7 @@ import org.hibernate.type.SqlTypes;
 
 @Entity
 @Data
-@SQLDelete(sql = "UPDATE accomodations SET is_deleted = true WHERE id=?")
+@SQLDelete(sql = "UPDATE accommodations SET is_deleted = true WHERE id=?")
 @SQLRestriction("is_deleted=false")
 @Table(name = "accommodations")
 public class Accommodation {
