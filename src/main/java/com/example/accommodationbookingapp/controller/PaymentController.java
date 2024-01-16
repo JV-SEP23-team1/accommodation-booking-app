@@ -26,8 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Tag(name = "Payment management", description = "Endpoints for managing payments")
 public class PaymentController {
-    private PaymentService paymentService;
-    private UriService uriService;
+    private final PaymentService paymentService;
+    private final UriService uriService;
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/{id}")

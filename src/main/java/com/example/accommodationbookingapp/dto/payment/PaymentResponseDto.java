@@ -1,6 +1,5 @@
 package com.example.accommodationbookingapp.dto.payment;
 
-import com.example.accommodationbookingapp.model.Booking;
 import com.example.accommodationbookingapp.model.Payment;
 import java.math.BigDecimal;
 import java.net.URL;
