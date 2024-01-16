@@ -1,10 +1,9 @@
 package com.example.accommodationbookingapp.service.date.impl;
 
 import com.example.accommodationbookingapp.service.date.DateService;
-import org.springframework.stereotype.Service;
-
 import java.time.Duration;
 import java.time.LocalDate;
+import org.springframework.stereotype.Service;
 
 @Service
 public class DateServiceImpl implements DateService {
