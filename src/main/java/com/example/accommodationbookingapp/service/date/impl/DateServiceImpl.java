@@ -1,9 +1,12 @@
 package com.example.accommodationbookingapp.service.date.impl;
 
 import com.example.accommodationbookingapp.service.date.DateService;
+import org.springframework.stereotype.Service;
+
 import java.time.Duration;
 import java.time.LocalDate;
 
+@Service
 public class DateServiceImpl implements DateService {
     public static final int GAP = 1;
 

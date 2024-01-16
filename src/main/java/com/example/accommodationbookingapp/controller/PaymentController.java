@@ -50,7 +50,6 @@ public class PaymentController {
                 createdPaymentDto.getSessionUrl());
         response.sendRedirect(String.valueOf(redirectUrl));
         return createdPaymentDto;
-
     }
 
     @PreAuthorize("hasRole('USER')")
