@@ -15,7 +15,7 @@ public class AccommodationResponseDto {
 
     private String size;
 
-    private List<String> amenities;
+    private List<Long> amenitiesIds;
 
     private BigDecimal dailyRate;
 

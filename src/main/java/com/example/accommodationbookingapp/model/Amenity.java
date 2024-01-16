@@ -26,7 +26,7 @@ public class Amenity {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
-    public Amenity(String name) {
-        this.name = name;
+    public Amenity(Long id) {
+        this.id = id;
     }
 }
