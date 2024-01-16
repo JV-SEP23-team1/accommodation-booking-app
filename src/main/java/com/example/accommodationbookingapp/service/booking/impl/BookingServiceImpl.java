@@ -12,6 +12,7 @@ import com.example.accommodationbookingapp.repository.accommodation.Accommodatio
 import com.example.accommodationbookingapp.repository.booking.BookingRepository;
 import com.example.accommodationbookingapp.repository.user.UserRepository;
 import com.example.accommodationbookingapp.service.booking.BookingService;
+import com.example.accommodationbookingapp.service.notification.NotificationService;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final BookingMapper bookingMapper;
     private final AccommodationRepository accommodationRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     @Override
@@ -48,7 +50,10 @@ public class BookingServiceImpl implements BookingService {
         booking.setAccommodation(accommodation);
         booking.setUser(user);
         booking.setStatus(Booking.Status.CONFIRMED);
-        return bookingMapper.toResponseDto(bookingRepository.save(booking));
+        BookingResponseDto responseDto = bookingMapper
+                .toResponseDto(bookingRepository.save(booking));
+        notificationService.sendBookingCreateMessage(responseDto);
+        return responseDto;
     }
 
     @Override
@@ -111,7 +116,10 @@ public class BookingServiceImpl implements BookingService {
         booking.setCheckInDate(requestDto.getCheckInDate());
         booking.setCheckOutDate(requestDto.getCheckOutDate());
         booking.setAccommodation(accommodation);
-        return bookingMapper.toResponseDto(bookingRepository.save(booking));
+        BookingResponseDto responseDto = bookingMapper
+                .toResponseDto(bookingRepository.save(booking));
+        notificationService.sendBookingUpdateMessage(responseDto);
+        return responseDto;
     }
 
     @Override

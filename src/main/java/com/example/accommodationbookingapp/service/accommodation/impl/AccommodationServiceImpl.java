@@ -9,6 +9,7 @@ import com.example.accommodationbookingapp.model.Accommodation;
 import com.example.accommodationbookingapp.model.Amenity;
 import com.example.accommodationbookingapp.repository.accommodation.AccommodationRepository;
 import com.example.accommodationbookingapp.service.accommodation.AccommodationService;
+import com.example.accommodationbookingapp.service.notification.NotificationService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -21,12 +22,16 @@ public class AccommodationServiceImpl implements AccommodationService {
             = "Cannot find accommodation by id: ";
     private final AccommodationRepository accommodationRepository;
     private final AccommodationMapper accommodationMapper;
+    private final NotificationService notificationService;
 
     @Override
     public AccommodationResponseDto save(CreateAccommodationRequestDto requestDto) {
         Accommodation accommodationModel = accommodationMapper.toModel(requestDto);
         accommodationRepository.save(accommodationModel);
-        return accommodationMapper.toResponseDto(accommodationModel);
+        AccommodationResponseDto responseDto = accommodationMapper
+                .toResponseDto(accommodationModel);
+        notificationService.sendAccommodationCreateMessage(responseDto);
+        return responseDto;
     }
 
     @Override
@@ -55,7 +60,10 @@ public class AccommodationServiceImpl implements AccommodationService {
                                 CANNOT_FIND_ACCOMMODATION_BY_ID_MSG + id));
         setUpdatedFields(updateRequestDto, accommodationFromDb);
         accommodationRepository.save(accommodationFromDb);
-        return accommodationMapper.toResponseDto(accommodationFromDb);
+        AccommodationResponseDto responseDto = accommodationMapper
+                .toResponseDto(accommodationFromDb);
+        notificationService.sendAccommodationUpdateMessage(responseDto);
+        return responseDto;
     }
 
     @Override

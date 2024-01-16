@@ -23,6 +23,7 @@ public class TelegramNotificationService implements NotificationService {
         telegramBot.sendMessage(chatId, message);
     }
 
+    @Override
     public void sendAccommodationCreateMessage(AccommodationResponseDto accommodationResponseDto) {
         String message = "New accommodation was created: " + System.lineSeparator()
                 + "Type: " + accommodationResponseDto.getType() + System.lineSeparator()
@@ -35,6 +36,7 @@ public class TelegramNotificationService implements NotificationService {
         sendNotification(adminChatId, message);
     }
 
+    @Override
     public void sendAccommodationUpdateMessage(AccommodationResponseDto accommodationResponseDto) {
         String message = "Accommodation by id : " + accommodationResponseDto.getId()
                 + " was updated" + System.lineSeparator()
@@ -50,6 +52,7 @@ public class TelegramNotificationService implements NotificationService {
         sendNotification(adminChatId, message);
     }
 
+    @Override
     public void sendBookingCreateMessage(BookingResponseDto bookingResponseDto) {
         User user = userRepository.findById(bookingResponseDto.getUserId()).get();
         Long chatId = user.getChatId();
@@ -58,6 +61,7 @@ public class TelegramNotificationService implements NotificationService {
         sendNotification(chatId, message);
     }
 
+    @Override
     public void sendBookingUpdateMessage(BookingResponseDto bookingResponseDto) {
         User user = userRepository.findById(bookingResponseDto.getUserId()).get();
         Long chatId = user.getChatId();
