@@ -42,10 +42,11 @@ public class PaymentServiceImpl implements PaymentService {
                 () -> new RuntimeException(DIDNT_FIND_BOOKING_WITH_ID + bookingId));
         long numberOfDays = dateService.calculateDurationInDays(
                 booking.getCheckInDate(), booking.getCheckOutDate());
+
         BigDecimal dailyRate = booking.getAccommodation().getDailyRate();
         BigDecimal totalCost = dailyRate.multiply(BigDecimal.valueOf(numberOfDays));
 
-        Session session = sessionService.createPaymentSession(totalCost);
+        Session session = sessionService.createPaymentSession(totalCost, booking);
 
         Payment createdPayment = buildPayment(session, bookingId, totalCost);
         Payment savedPayment = paymentRepository.save(createdPayment);
