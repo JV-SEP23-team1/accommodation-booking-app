@@ -3,16 +3,16 @@ package com.example.accommodationbookingapp.controller;
 import com.example.accommodationbookingapp.dto.payment.CreatePaymentDto;
 import com.example.accommodationbookingapp.dto.payment.PaymentResponseDto;
 import com.example.accommodationbookingapp.model.Payment;
+import com.example.accommodationbookingapp.model.User;
 import com.example.accommodationbookingapp.service.payment.PaymentService;
 import com.example.accommodationbookingapp.service.url.UriService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,7 +29,7 @@ public class PaymentController {
     private final PaymentService paymentService;
     private final UriService uriService;
 
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     @Operation(summary = "Get Payments by User ID",
             description = "Get Payments as dto by User ID")
@@ -38,18 +38,21 @@ public class PaymentController {
     }
 
     @PreAuthorize("hasRole('USER')")
+    @GetMapping()
+    @Operation(summary = "Get Payments for certain User",
+            description = "Get Payments as dto by User ID")
+    public List<PaymentResponseDto> getPaymentsForUser(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        return paymentService.findAllByUserId(user.getId());
+    }
+
+    @PreAuthorize("hasRole('USER')")
     @PostMapping
     @Operation(summary = "Create new Payment",
             description = "Create new Payment using CreatePaymentDto")
-    public PaymentResponseDto initiatePaymentSession(@RequestBody CreatePaymentDto requestDto,
-                                                     HttpServletResponse response)
+    public PaymentResponseDto initiatePaymentSession(@RequestBody CreatePaymentDto requestDto)
             throws IOException {
-        PaymentResponseDto createdPaymentDto = paymentService.create(requestDto.getBookingId());
-        URI redirectUrl = uriService.buildUriWithSessionId(
-                createdPaymentDto.getSessionId(),
-                createdPaymentDto.getSessionUrl());
-        response.sendRedirect(String.valueOf(redirectUrl));
-        return createdPaymentDto;
+        return paymentService.create(requestDto.getBookingId());
     }
 
     @PreAuthorize("hasRole('USER')")

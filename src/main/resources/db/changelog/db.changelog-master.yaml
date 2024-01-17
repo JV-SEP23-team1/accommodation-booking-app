@@ -23,3 +23,6 @@ databaseChangeLog:
       file: db/changelog/changes/11-create-bookings-table.yaml
   - include:
       file: db/changelog/changes/12-create-payments-table.yaml
+  - include:
+      file: db/changelog/changes/13-update-payments-table.yaml
+

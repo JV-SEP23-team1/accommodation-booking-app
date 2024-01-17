@@ -34,35 +34,30 @@ public class SessionServiceImpl implements SessionService {
     public Session createPaymentSession(BigDecimal bookingPrice, Booking booking) {
         Stripe.apiKey = stripeApiKey;
         try {
+            Long priceInCents = bookingPrice.multiply(BigDecimal.valueOf(100)).longValue();
+            Product product = createProduct(booking.getAccommodation().getType().toString());
+            Price price = createPrice(priceInCents, product.getId());
+
             String successUrl = UriComponentsBuilder.fromUriString(stripeDomainUrl)
                     .path(SUCCESS)
                     .build().toUriString();
+
             String cancelUrl = UriComponentsBuilder.fromUriString(stripeDomainUrl)
                     .path(CANCEL)
                     .build().toUriString();
 
-            Long priceInCents = bookingPrice.multiply(BigDecimal.valueOf(100)).longValue();
-            Product product = createProduct(booking.getAccommodation().getType().toString());
-
-            Price price = createPrice(priceInCents, product.getId());
-
-            SessionCreateParams params = SessionCreateParams.builder()
+            SessionCreateParams.Builder sessionParamsBuilder = SessionCreateParams.builder()
                     .setMode(SessionCreateParams.Mode.PAYMENT)
                     .setSuccessUrl(successUrl)
                     .setCancelUrl(cancelUrl)
                     .addLineItem(
                             SessionCreateParams.LineItem.builder()
+                                    .setPrice(price.getId())
                                     .setQuantity(QUANTITY)
-                                    .setPriceData(
-                                            SessionCreateParams.LineItem.PriceData.builder()
-                                                    .setCurrency(USD)
-                                                    .setUnitAmount(priceInCents)
-                                                    .build()
-                                    )
                                     .build()
-                    )
-                    .build();
-            return Session.create(params);
+                    );
+
+            return Session.create(sessionParamsBuilder.build());
         } catch (StripeException e) {
             throw new RuntimeException(ERROR_CREATING_PAYMENT_SESSION, e);
         }

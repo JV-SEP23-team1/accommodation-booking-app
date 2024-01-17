@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: update-payments-table
+      author: mykhailo dymusha
+      changes:
+        - modifyDataType:
+            tableName: payments
+            columnName: session_url
+            newDataType: varchar(500)
