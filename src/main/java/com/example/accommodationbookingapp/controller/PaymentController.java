@@ -5,30 +5,24 @@ import com.example.accommodationbookingapp.dto.payment.PaymentResponseDto;
 import com.example.accommodationbookingapp.model.Payment;
 import com.example.accommodationbookingapp.model.User;
 import com.example.accommodationbookingapp.service.payment.PaymentService;
-import com.example.accommodationbookingapp.service.url.UriService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.util.List;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/payments")
 @RequiredArgsConstructor
 @Tag(name = "Payment management", description = "Endpoints for managing payments")
 public class PaymentController {
+    private static final String SUCCESSFUL_PAYMENT = "Paid successfully for the Session: ";
+    private static final String CANCELED_PAYMENT = "Payment canceled for the Session: ";
     private final PaymentService paymentService;
-    private final UriService uriService;
-
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     @Operation(summary = "Get Payments by User ID",
@@ -50,7 +44,7 @@ public class PaymentController {
     @PostMapping
     @Operation(summary = "Create new Payment",
             description = "Create new Payment using CreatePaymentDto")
-    public PaymentResponseDto initiatePaymentSession(@RequestBody CreatePaymentDto requestDto)
+    public PaymentResponseDto initiatePaymentSession(@RequestBody CreatePaymentDto requestDto, HttpServletResponse response)
             throws IOException {
         return paymentService.create(requestDto.getBookingId());
     }
@@ -59,15 +53,17 @@ public class PaymentController {
     @GetMapping("/success")
     @Operation(summary = "Updated Payment status in case of successful payment",
             description = "Updated Payment status to PAID in case of successful payment")
-    public PaymentResponseDto handlePaymentSuccess(@RequestParam String sessionId) {
-        return paymentService.update(sessionId, Payment.Status.PAID);
+    public String handlePaymentSuccess(@RequestParam("session_id") String sessionId) {
+        paymentService.update(sessionId, Payment.Status.PAID);
+        return SUCCESSFUL_PAYMENT + sessionId;
     }
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/cancel")
     @Operation(summary = "Updated Payment status in case of canceled payment",
             description = "Updated Payment status to CANCELED in case of canceled payment")
-    public PaymentResponseDto handlePaymentCancel(@RequestParam String sessionId) {
-        return paymentService.update(sessionId, Payment.Status.CANCELED);
+    public String handlePaymentCancel(@RequestParam("session_id") String sessionId) {
+        paymentService.update(sessionId, Payment.Status.CANCELED);
+        return CANCELED_PAYMENT + sessionId;
     }
 }

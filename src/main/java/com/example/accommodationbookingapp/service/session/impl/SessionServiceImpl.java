@@ -25,6 +25,7 @@ public class SessionServiceImpl implements SessionService {
     private static final long QUANTITY = 1L;
     private static final String SUCCESS = "/success";
     private static final String CANCEL = "/cancel";
+    public static final String SESSION_ID_PARAM = "?session_id={CHECKOUT_SESSION_ID}";
     @Value("${stripe.domainUrl}")
     private String stripeDomainUrl;
     @Value("${stripe.api.key}")
@@ -40,10 +41,12 @@ public class SessionServiceImpl implements SessionService {
 
             String successUrl = UriComponentsBuilder.fromUriString(stripeDomainUrl)
                     .path(SUCCESS)
+                    .path(SESSION_ID_PARAM)
                     .build().toUriString();
 
             String cancelUrl = UriComponentsBuilder.fromUriString(stripeDomainUrl)
                     .path(CANCEL)
+                    .path(SESSION_ID_PARAM)
                     .build().toUriString();
 
             SessionCreateParams.Builder sessionParamsBuilder = SessionCreateParams.builder()

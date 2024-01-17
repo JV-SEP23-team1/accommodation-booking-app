@@ -54,7 +54,7 @@ public class PaymentServiceImpl implements PaymentService {
         Payment savedPayment = paymentRepository.save(createdPayment);
         PaymentResponseDto paymentResponseDto = paymentMapper
                 .paymentToPaymentResponseDto(savedPayment);
-        notificationService.sendPaymentMessage(paymentResponseDto);
+//        notificationService.sendPaymentMessage(paymentResponseDto);
         return paymentResponseDto;
     }
 
