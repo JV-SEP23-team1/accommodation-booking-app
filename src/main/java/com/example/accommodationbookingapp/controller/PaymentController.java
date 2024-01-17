@@ -8,9 +8,7 @@ import com.example.accommodationbookingapp.service.payment.PaymentService;
 import com.example.accommodationbookingapp.service.url.UriService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -47,19 +45,14 @@ public class PaymentController {
         User user = (User) authentication.getPrincipal();
         return paymentService.findAllByUserId(user.getId());
     }
+
     @PreAuthorize("hasRole('USER')")
     @PostMapping
     @Operation(summary = "Create new Payment",
             description = "Create new Payment using CreatePaymentDto")
-    public PaymentResponseDto initiatePaymentSession(@RequestBody CreatePaymentDto requestDto,
-                                                     HttpServletResponse response)
+    public PaymentResponseDto initiatePaymentSession(@RequestBody CreatePaymentDto requestDto)
             throws IOException {
-        PaymentResponseDto createdPaymentDto = paymentService.create(requestDto.getBookingId());
-        URI redirectUrl = uriService.buildUriWithSessionId(
-                createdPaymentDto.getSessionId(),
-                createdPaymentDto.getSessionUrl());
-        response.sendRedirect(String.valueOf(redirectUrl));
-        return createdPaymentDto;
+        return paymentService.create(requestDto.getBookingId());
     }
 
     @PreAuthorize("hasRole('USER')")
