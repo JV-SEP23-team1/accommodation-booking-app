@@ -4,6 +4,7 @@ import com.example.accommodationbookingapp.dto.booking.BookingResponseDto;
 import com.example.accommodationbookingapp.dto.booking.CreateBookingRequestDto;
 import com.example.accommodationbookingapp.dto.booking.UpdateBookingRequestDto;
 import com.example.accommodationbookingapp.exception.EntityNotFoundException;
+import com.example.accommodationbookingapp.exception.IllegalStateException;
 import com.example.accommodationbookingapp.mapper.BookingMapper;
 import com.example.accommodationbookingapp.model.Accommodation;
 import com.example.accommodationbookingapp.model.Booking;
@@ -30,6 +31,9 @@ public class BookingServiceImpl implements BookingService {
     private static final String ACCOMMODATION_NOT_FOUND_EXCEPTION =
             "Can't find the accommodation by ID: ";
 
+    private static final String INVALID_DATE_EXCEPTION
+            = "Accommodation is already booked for the specified date range";
+
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final BookingMapper bookingMapper;
@@ -44,11 +48,18 @@ public class BookingServiceImpl implements BookingService {
                         USER_NOT_FOUND_EXCEPTION + userId
                 ));
         Accommodation accommodation = getAccommodationById(requestDto.getAccommodationId());
+        if (bookingRepository.existBookingAccommodationWithSameDate(
+                accommodation.getId(),
+                requestDto.getCheckInDate(),
+                requestDto.getCheckOutDate())
+        ) {
+            throw new IllegalStateException(INVALID_DATE_EXCEPTION);
+        }
         Booking booking = new Booking();
+        booking.setUser(user);
         booking.setCheckInDate(requestDto.getCheckInDate());
         booking.setCheckOutDate(requestDto.getCheckOutDate());
         booking.setAccommodation(accommodation);
-        booking.setUser(user);
         booking.setStatus(Booking.Status.CONFIRMED);
         BookingResponseDto responseDto = bookingMapper
                 .toResponseDto(bookingRepository.save(booking));
@@ -122,6 +133,7 @@ public class BookingServiceImpl implements BookingService {
         return responseDto;
     }
 
+    @Transactional
     @Override
     public void deleteByBookingIdAndUserId(Long bookingId, Long userId) {
         bookingRepository.deleteByIdAndUserId(bookingId, userId);

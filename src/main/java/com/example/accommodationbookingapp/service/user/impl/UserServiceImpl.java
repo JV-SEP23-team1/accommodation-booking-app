@@ -41,7 +41,9 @@ public class UserServiceImpl implements UserService {
             );
         }
         requestDto.setPassword(passwordEncoder.encode(requestDto.getPassword()));
+        Role userRole = roleRepository.findByRoleName(Role.RoleName.USER);
         User user = userMapper.toModel(requestDto);
+        user.setRoles(Set.of(userRole));
         return userMapper.toDto(userRepository.save(user));
     }
 

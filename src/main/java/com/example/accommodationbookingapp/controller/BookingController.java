@@ -82,7 +82,7 @@ public class BookingController {
             Authentication authentication,
             @PathVariable(name = "id") Long bookingId) {
         User user = (User) authentication.getPrincipal();
-        return bookingService.getBookingByIdAndUserId(user.getId(), bookingId);
+        return bookingService.getBookingByIdAndUserId(bookingId, user.getId());
     }
 
     @PreAuthorize("hasRole('USER')")
