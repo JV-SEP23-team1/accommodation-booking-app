@@ -9,11 +9,16 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.util.List;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/payments")
@@ -23,6 +28,7 @@ public class PaymentController {
     private static final String SUCCESSFUL_PAYMENT = "Paid successfully for the Session: ";
     private static final String CANCELED_PAYMENT = "Payment canceled for the Session: ";
     private final PaymentService paymentService;
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     @Operation(summary = "Get Payments by User ID",
@@ -44,7 +50,7 @@ public class PaymentController {
     @PostMapping
     @Operation(summary = "Create new Payment",
             description = "Create new Payment using CreatePaymentDto")
-    public PaymentResponseDto initiatePaymentSession(@RequestBody CreatePaymentDto requestDto, HttpServletResponse response)
+    public PaymentResponseDto initiatePaymentSession(@RequestBody CreatePaymentDto requestDto)
             throws IOException {
         return paymentService.create(requestDto.getBookingId());
     }
